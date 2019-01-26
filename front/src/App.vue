@@ -1,29 +1,43 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-navigation-drawer v-model="drawer" disable-resize-watcher floating absolute dark right app :width="drawerWidth">
+      <v-list>
+
+      </v-list>
+    </v-navigation-drawer>
+    <v-toolbar app dark color="primary">
+      <v-icon>filter_vintage</v-icon>
+      <v-toolbar-title class="headline text-uppercase">
+        <span>Scarecrow</span>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+    </v-toolbar>
+    <v-content>
+      <router-view></router-view>
+    </v-content>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+
+export default {
+  name: 'Main',
+  data: () => ({
+    drawer: null,
+    drawerWidth: window.innerWidth * 0.75
+  }),
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener('resize', () => {
+        this.drawerWidth = window.innerWidth * 0.75
+      });
+    })
+  },
+  methods: {
+    setup(sketch) {
+      sketch.background('green')
     }
   }
 }
-</style>
+</script>
