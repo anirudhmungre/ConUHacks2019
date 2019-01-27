@@ -13,6 +13,9 @@
 </template>
 
 <script>
+  import VueP5 from "vue-p5"
+  import io from 'socket.io-client'
+
 class Cloud {
   constructor(sketch, x, y, size) {
     this.sketch = sketch
@@ -74,16 +77,36 @@ class Cloud {
   }
 }
 
-import VueP5 from "vue-p5";
-
 export default {
   name: "home",
   components: {
     "vue-p5": VueP5
   },
   data: () => ({
-    clouds: []
+    clouds: [],
+    socket: null,
+    eventLoop: null,
+    tp: 0,
+    ph:0,
+    sm: 0
   }),
+  beforeDestroy() {
+    this.socket.disconnect()
+    clearInterval(this.eventLoop)
+  },
+  mounted() {
+    let context = this
+    this.socket = io(this.$socketPath)
+    this.eventLoop = setInterval(function () {
+      context.socket.emit('get-data-vis', {})
+    }, 2000)
+    this.socket.on('give-data-vis', (data) => {
+      context.tp = data.tp
+      context.ph = data.ph
+      context.sm = data.sm
+    })
+
+  },
   methods: {
     // preload(sketch) {
     //     var clouds = []
@@ -119,9 +142,10 @@ export default {
     //   )
     },
     draw(sketch) {
-      let tp = 1 // Between 0-1
-      let ph = 0.5 // Between 0-1
-      let sm = 0.8 // Between 0-1
+      console.log(this.tp)
+      let tp = this.tp // Between 0-1
+      let ph = this.ph // Between 0-1
+      let sm = this.sm // Between 0-1
 
       // THIS CHANGES FOR TEMP
       // BLUE - R: 120-0 G: 160-116 B: 200-255

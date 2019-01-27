@@ -6,8 +6,10 @@
         <span>Scarecrow</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn>Home</v-btn>
-      <v-btn>Dials</v-btn>
+      <v-toolbar-items class="hidden-xs-and-down">
+        <v-btn flat to="/">Home</v-btn>
+        <v-btn flat to="/dials">Live Data</v-btn>
+      </v-toolbar-items>
     </v-toolbar>
     <v-content>
       <router-view></router-view>
