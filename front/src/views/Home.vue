@@ -123,23 +123,6 @@ export default {
         let size = sketch.random(2, 6);
         this.clouds.push(new Cloud(sketch, x, y, size));
       }
-    //   // THIS CHANGES FOR SOIL MOISTURE
-    //   // DIRT
-    //   sketch.fill(137, 75, 42);
-    //   sketch.rect(
-    //     0,
-    //     sketch.windowHeight * 0.666666,
-    //     (sketch.windowWidth / 12) * 10,
-    //     sketch.windowHeight * 0.333333
-    //   )
-    //   // GRASS
-    //   sketch.fill(69, 133, 15);
-    //   sketch.rect(
-    //     0,
-    //     sketch.windowHeight * 0.666666,
-    //     (sketch.windowWidth / 12) * 10,
-    //     10
-    //   )
     },
     draw(sketch) {
       console.log(this.tp)
