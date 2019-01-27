@@ -1,32 +1,35 @@
 const app = require('express')();
 const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const socketio = require('socket.io')(http);
 
+const dataPoints = 20
 let dialData = {
-  temperature: Array(35).fill(0).map(e => Math.random() * 50),
-  humidity: Array(35).fill(0).map(e => Math.random() * 50),
-  pressure: Array(35).fill(0).map(e => Math.random() * 50)
+  temperature: Array(dataPoints).fill(0).map(e => Math.random() * 50),
+  humidity: Array(dataPoints).fill(0).map(e => Math.random() * 50),
+  pressure: Array(dataPoints).fill(0).map(e => Math.random() * 50)
 }
-
-const updateDialData = () => {
+setInterval(() => {
   dialData.temperature.shift()
   dialData.temperature.push(Math.random() * 50)
   dialData.humidity.shift()
   dialData.humidity.push(Math.random() * 50)
   dialData.pressure.shift()
   dialData.pressure.push(Math.random() * 50)
+}, 6000)
+
+let visData = {
+  tp: 0.2,
+  ph: 0.2,
+  sm: 0.6
 }
 
-io.on('connection', function(socket){
+socketio.on('connection', function(socket){
   console.log('a user connected')
-  socket.on('disconnect', () => {
-    console.log("He's ded jimbo")
-  })
+  socket.on('disconnect', () => { console.log("He's ded jimbo") })
   socket.on('get-data-vis', () => {
-    socket.emit('give-data-vis', {fuck: "yes"})
+    socket.emit('give-data-vis', visData)
   })
   socket.on('get-data-dial', () => {
-    updateDialData()
     socket.emit('give-data-dial', dialData)
   })
 })
