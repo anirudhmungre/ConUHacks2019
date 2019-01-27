@@ -8,7 +8,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-xs-and-down">
         <v-btn flat to="/">Home</v-btn>
-        <v-btn flat to="/dials">Dials</v-btn>
+        <v-btn flat to="/dials">Live Data</v-btn>
       </v-toolbar-items>
     </v-toolbar>
     <v-content>

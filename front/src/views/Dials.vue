@@ -36,19 +36,25 @@
                         <v-tab-item>
                             <!--TEMP-->
                             <v-card flat>
-                                <v-card-text>Temperature</v-card-text>
+                                <v-card-text>
+                                    <v-sparkline padding="10" color="" :smooth="10" :line-width="2" :value="temperatureReading" auto-draw smooth stroke-linecap="round"></v-sparkline>
+                                </v-card-text>
                             </v-card>
                         </v-tab-item>
                         <v-tab-item>
                             <!--HUMID-->
                             <v-card flat>
-                                <v-card-text>Humidity</v-card-text>
+                                <v-card-text>
+                                    <v-sparkline padding="10" color="" :smooth="10" :line-width="2" :value="humidityReading" auto-draw smooth stroke-linecap="round"></v-sparkline>
+                                </v-card-text>
                             </v-card>
                         </v-tab-item>
                         <v-tab-item>
                             <!--PRESS-->
                             <v-card flat>
-                                <v-card-text>Pressure</v-card-text>
+                                <v-card-text>
+                                    <v-sparkline padding="10" color="" :smooth="10" :line-width="2" :value="pressureReading" auto-draw smooth stroke-linecap="round"></v-sparkline>
+                                </v-card-text>
                             </v-card>
                         </v-tab-item>
                         <v-tab-item>
@@ -82,6 +88,9 @@
             dialog: null,
             vSelectCrop: null,
             selectedCrop: null,
+            temperatureReading: [],
+            humidityReading: [],
+            pressureReading: [],
             crops: ["Corn", "Soy Beans"],
             labelStyle: {
                 format: '{value}'
@@ -108,6 +117,11 @@
                 endWidth: 15
             }]
         }),
+        mounted() {
+            this.temperatureReading = Array(35).fill(0).map(e => Math.random() * 100)
+            this.humidityReading = Array(35).fill(0).map(e => Math.random() * 100)
+            this.pressureReading = Array(35).fill(0).map(e => Math.random() * 50)
+        },
         methods: {
             cancelDialog() {
                 this.dialog = false
