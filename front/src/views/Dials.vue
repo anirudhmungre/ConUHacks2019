@@ -36,6 +36,21 @@
                         <v-tab-item>
                             <!--TEMP-->
                             <v-card flat>
+                                <v-card-title class="headline">Live Data</v-card-title>
+                                <v-card-text>
+                                    <ejs-lineargauge>
+                                        <e-axes>
+                                            <e-axis :ranges='temperatureRanges' maximum="50" minimum="-50">
+                                                <e-pointers>
+                                                    <e-pointer color="green" :value="0"></e-pointer>
+                                                </e-pointers>
+                                            </e-axis>
+                                        </e-axes>
+                                    </ejs-lineargauge>
+                                </v-card-text>
+                            </v-card>
+                            <v-card flat>
+                                <v-card-title class="headline">History</v-card-title>
                                 <v-card-text>
                                     <v-sparkline padding="10" color="" :smooth="10" :line-width="2" :value="temperatureReading" auto-draw smooth stroke-linecap="round"></v-sparkline>
                                 </v-card-text>
@@ -44,6 +59,7 @@
                         <v-tab-item>
                             <!--HUMID-->
                             <v-card flat>
+                                <v-card-title class="headline">History</v-card-title>
                                 <v-card-text>
                                     <v-sparkline padding="10" color="" :smooth="10" :line-width="2" :value="humidityReading" auto-draw smooth stroke-linecap="round"></v-sparkline>
                                 </v-card-text>
@@ -52,6 +68,7 @@
                         <v-tab-item>
                             <!--PRESS-->
                             <v-card flat>
+                                <v-card-title class="headline">History</v-card-title>
                                 <v-card-text>
                                     <v-sparkline padding="10" color="" :smooth="10" :line-width="2" :value="pressureReading" auto-draw smooth stroke-linecap="round"></v-sparkline>
                                 </v-card-text>
@@ -60,12 +77,13 @@
                         <v-tab-item>
                             <!--VWC-->
                             <v-card flat>
+                                <v-card-title class="headline">History</v-card-title>
                                 <v-card-text>
                                     <ejs-lineargauge>
                                         <e-axes>
                                             <e-axis :ranges='ranges' maximum="100" minimum="0">
                                                 <e-pointers>
-                                                    <e-pointer color="green" value="10"></e-pointer>
+                                                    <e-pointer color="black" value="10"></e-pointer>
                                                 </e-pointers>
                                             </e-axis>
                                         </e-axes>
@@ -81,6 +99,8 @@
 </template>
 
 <script>
+    import io from 'socket.io-client'
+
     export default {
         name: 'dials',
         data: () => ({
@@ -89,12 +109,51 @@
             vSelectCrop: null,
             selectedCrop: null,
             temperatureReading: [],
+            currentTemperature: 0,
             humidityReading: [],
+            currentHumidity: 0,
             pressureReading: [],
+            currentPressure: 0,
             crops: ["Corn", "Soy Beans"],
             labelStyle: {
                 format: '{value}'
             },
+            temperatureRanges: [{
+                start: -50,
+                end: -30,
+                startWidth: 15,
+                endWidth: 15
+            }, {
+                start: -30,
+                end: -15,
+                startWidth: 15,
+                endWidth: 15
+            }, {
+                start: -15,
+                end: 0,
+                startWidth: 15,
+                endWidth: 15
+            }, {
+                start: 0,
+                end: 15,
+                startWidth: 15,
+                endWidth: 15
+            }, {
+                start: 15,
+                end: 25,
+                startWidth: 15,
+                endWidth: 15
+            }, {
+                start: 25,
+                end: 35,
+                startWidth: 15,
+                endWidth: 15
+            }, {
+                start: 35,
+                end: 50,
+                startWidth: 15,
+                endWidth: 15
+            }],
             ranges: [{
                 start: 0,
                 end: 40,
@@ -115,12 +174,29 @@
                 end: 100,
                 startWidth: 15,
                 endWidth: 15
-            }]
+            }],
+            socket: null,
+            eventLoop: null
         }),
+        beforeDestroy() {
+            this.socket.disconnect()
+            clearInterval(this.eventLoop)
+        },
         mounted() {
-            this.temperatureReading = Array(35).fill(0).map(e => Math.random() * 100)
-            this.humidityReading = Array(35).fill(0).map(e => Math.random() * 100)
-            this.pressureReading = Array(35).fill(0).map(e => Math.random() * 50)
+            let context = this
+            this.socket = io(this.$socketPath)
+            this.eventLoop = setInterval(function () {
+                context.socket.emit('get-data-dial', {})
+            }, 2000)
+            this.socket.on('give-data-dial', (data) => {
+                this.temperatureReading = data.temperature
+                this.currentTemperature = data.temperature[data.temperature-1]
+                this.humidityReading = data.humidity
+                this.currentHumidity = data.humidity[data.humidity-1]
+                this.pressureReading = data.pressure
+                this.currentPressure = data.pressure[data.pressure-1]
+            })
+
         },
         methods: {
             cancelDialog() {
@@ -136,5 +212,5 @@
 </script>
 
 <style>
-    @import "../../node_modules/@syncfusion/ej2-base/styles/material.css";
+    /*@import "../../node_modules/@syncfusion/ej2-base/styles/material.css";*/
 </style>

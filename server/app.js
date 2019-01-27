@@ -1,33 +1,36 @@
-var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
+let dialData = {
+  temperature: Array(35).fill(0).map(e => Math.random() * 50),
+  humidity: Array(35).fill(0).map(e => Math.random() * 50),
+  pressure: Array(35).fill(0).map(e => Math.random() * 50)
+}
+
+const updateDialData = () => {
+  dialData.temperature.shift()
+  dialData.temperature.push(Math.random() * 50)
+  dialData.humidity.shift()
+  dialData.humidity.push(Math.random() * 50)
+  dialData.pressure.shift()
+  dialData.pressure.push(Math.random() * 50)
+}
 
 io.on('connection', function(socket){
-  console.log('a user connected');
-  console.log('What a dick');
-  console.log('Who does this person think they are?');
-  (function() {
-    // Data to be sent to the user added here.
-    // Soil Moisture 0-100
-    // Temperature 0-100
-    // Clouds 0-100
+  console.log('a user connected')
+  socket.on('disconnect', () => {
+    console.log("He's ded jimbo")
+  })
+  socket.on('get-data-vis', () => {
+    socket.emit('give-data-vis', {fuck: "yes"})
+  })
+  socket.on('get-data-dial', () => {
+    updateDialData()
+    socket.emit('give-data-dial', dialData)
+  })
+})
 
-    obj = {soil_moisture: Math.random() * 100,
-        temperature: Math.random() * 100,
-        clouds: Math.random() * 100};
-
-    jsonObj = JSON.stringify(obj);
-    
-    socket.emit('message', jsonObj);
-
-    setTimeout(arguments.callee, 30000);  
-  })();
-});
-
-http.listen(3000, function(){
-  console.log('listening on *:3000');
-});
+http.listen(3000, () => {
+  console.log('listening on *:3000')
+})
